@@ -4,20 +4,25 @@ import  jwt from 'jsonwebtoken';
 const JWT_SECRET = process.env.SECRET_KEY
 
 const authenticateJWT = (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1];
+    // Check for token in Authorization header or in cookies
+    const token = req.headers.authorization?.split(' ')[1] || req.cookies?.accessToken;
 
     if (token) {
         jwt.verify(token, JWT_SECRET, (err, decoded) => {
             if (err) {
-                console.error('please log in, error:', err);
-                return { status: 'error', message: "you dont have access" };
+                console.error('Authentication error:', err.message);
+                const status = err.name === 'TokenExpiredError' ? 401 : 403;
+                return res.status(status).json({ 
+                    status: 'error', 
+                    message: err.name === 'TokenExpiredError' ? "Session expired" : "Invalid token" 
+                });
             }
             req.user = decoded;
             next();
         });
     } else {
-        console.error('you can not access this site, error:');
-        return { status: 'error', message: "private section" };
+        console.error('No token provided');
+        return res.status(401).json({ status: 'error', message: "Authentication required" });
     }
 };
 

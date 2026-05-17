@@ -1,31 +1,23 @@
-// models/User.ts
-import { Model, DataTypes } from 'sequelize';
-import dbStorage from '../lib/db.js';
+import mongoose from "mongoose";
 
-class User extends Model {}
-
-User.init({
-    id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-    },
-    username: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-    },
-    password_hash: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-    },
-}, {
-    sequelize : dbStorage.db,
-    tableName: 'users',
+const userSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
 });
+
+const User = mongoose.model("User", userSchema);
 
 export default User;
