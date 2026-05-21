@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import { useLogin } from '../hooks/useApi';
 import { AuthLayoutWrapper } from '../components/AuthLayoutWrapper';
+import { useQueryClient } from '@tanstack/react-query';
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState<string>('');
@@ -14,6 +15,7 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [rememberMe, setRememberMe] = useState<boolean>(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { mutateAsync: loginUser, isPending } = useLogin();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -21,6 +23,7 @@ const LoginPage: React.FC = () => {
     try {
       await loginUser({ username, password });
       toast.success("Welcome back!");
+      queryClient.clear();
       router.push('/');
     } catch (err: any) {
       toast.error(err instanceof Error ? err.message : 'An error occurred');

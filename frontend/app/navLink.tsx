@@ -8,6 +8,7 @@ import {
     UserCircleIcon,
   } from '@heroicons/react/24/outline';
 import { useLogout } from "./hooks/useApi";
+import { useQueryClient } from '@tanstack/react-query';
 const links = [
     {name: 'home', href : '/', icon: HomeIcon},
     {name: 'about', href : '/about', icon:BookOpenIcon},
@@ -17,14 +18,17 @@ const links = [
 
 export default function NavLinks (){
     const router = useRouter();
+    const queryClient = useQueryClient();
     const { mutateAsync: logout } = useLogout();
 
     const handleLogout = async () => {
         try {
             await logout();
+            queryClient.clear();
             router.push('/login'); 
         } catch (error) {
             console.error("Logout failed", error);
+            queryClient.clear();
             router.push('/login'); // Redirect anyway
         }
     };
