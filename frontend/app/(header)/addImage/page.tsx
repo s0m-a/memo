@@ -61,8 +61,8 @@ const handleChange = async (e:React.ChangeEvent<HTMLInputElement>) =>{
         const res = await preUpload(formData);
         setImageUrl(res.image_url);
         toast.success("Image ready for your story!");
-      } catch (error) {
-        toast.error("Failed to upload image. Please try again.");
+      } catch (error: any) {
+        toast.error(error.message || "Failed to upload image. Please try again.");
         setImagePreview(null);
       } finally {
         setIsUploading(false)
